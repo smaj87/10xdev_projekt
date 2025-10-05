@@ -16,3 +16,6 @@ export const prettyHost = customHost || 'localhost';
 
 // Public path for webpack
 export const publicPath = `http://${prettyHost}:${port}/`;
+
+// API configuration
+export const apiPrefix = '/api';

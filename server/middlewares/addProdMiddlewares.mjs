@@ -1,5 +1,4 @@
-import path from 'path';
-
+import { registerSpaRouting } from '../utils/spaRoutingHandler.mjs';
 import { dirVersion } from '../utils/version.mjs';
 
 const indexFilePath = `${dirVersion}/index.html`;
@@ -24,13 +23,6 @@ export default async function addProdMiddlewares(fastify, options) {
     },
   });
 
-  // Add a specific route for index.html fallback if needed
-  await fastify.setNotFoundHandler(async (request, reply) => {
-    // For non-API routes, serve the index.html
-    if (!request.url.startsWith('/api')) {
-      return reply.sendFile(indexFilePath);
-    }
-
-    reply.code(404).send({ error: 'Not Found' });
-  });
+  // Register SPA routing for index.html fallback
+  registerSpaRouting(fastify, async (reply) => reply.sendFile(indexFilePath));
 }

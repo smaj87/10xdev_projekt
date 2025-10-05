@@ -1,6 +1,3 @@
-/* eslint-disable no-console */
-import { spawn } from 'child_process';
-import killPort from 'kill-port';
 import { createFsFromVolume, Volume } from 'memfs';
 import path from 'path';
 import util from 'util';
@@ -8,8 +5,8 @@ import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
-import { port } from '../config.mjs';
 import { getHeadersForAsset } from '../utils/commonHeaders.mjs';
+import { registerSpaRouting } from '../utils/spaRoutingHandler.mjs';
 
 const fs = createFsFromVolume(new Volume());
 fs.join = path.join.bind(path);
@@ -28,27 +25,6 @@ function createWebpackMiddleware(compiler, publicPath) {
   });
 }
 
-async function handleCypressTests() {
-  const cypressCommand = `npx cypress run --env APP=${process.env.APP}`;
-
-  const cypressProcess = spawn(cypressCommand, {
-    shell: true,
-    stdio: 'inherit',
-  });
-
-  cypressProcess.on('close', (code) => {
-    console.log(`Cypress tests completed with exit code ${code}`);
-
-    killPort(port, 'tcp')
-      .then(() => {
-        console.log(`Process on port ${port} killed.`);
-      })
-      .catch((err) => {
-        console.error(`Error killing process on port ${port}:`, err);
-      });
-  });
-}
-
 export default async function addDevMiddlewares(fastify, webpackConfig) {
   const compiler = webpack(webpackConfig);
   const middleware = createWebpackMiddleware(
@@ -63,21 +39,10 @@ export default async function addDevMiddlewares(fastify, webpackConfig) {
   fastify.use(middleware);
   fastify.use(webpackHotMiddleware(compiler));
 
-  // Listen for the 'done' event when the build is complete
-  compiler.hooks.done.tap('BuildCompletePlugin', () => {
-    if (process.argv[2] === 'initCypressTests') {
-      handleCypressTests();
-    }
-  });
-
-  // Catch-all route for dev server
-  fastify.get('*', async (request, reply) => {
-    try {
-      const readFile = util.promisify(fs.readFile);
-      const file = await readFile(path.join(compiler.outputPath, 'index.html'));
-      reply.type('text/html').send(file.toString());
-    } catch (error) {
-      reply.code(404).send('Not Found');
-    }
+  // Register SPA routing for dev server - exclude API routes
+  registerSpaRouting(fastify, async (reply) => {
+    const readFile = util.promisify(fs.readFile);
+    const file = await readFile(path.join(compiler.outputPath, 'index.html'));
+    return reply.type('text/html').send(file.toString());
   });
 }

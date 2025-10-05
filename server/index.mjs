@@ -5,6 +5,7 @@ import { resolve } from 'path';
 
 import { buildPath, host, isProd, port, prettyHost } from './config.mjs';
 import logger from './logger.mjs';
+import apiSetup from './middlewares/apiMiddleware.mjs';
 import setup from './middlewares/frontendMiddleware.mjs';
 
 async function startServer() {
@@ -40,6 +41,9 @@ async function startServer() {
         process.exit(1);
       });
   });
+
+  // Setup API middleware BEFORE frontend middleware to avoid route conflicts
+  await apiSetup(fastify);
 
   // Setup frontend middleware
   await setup(fastify, {

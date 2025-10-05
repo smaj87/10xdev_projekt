@@ -1,5 +1,3 @@
-/* eslint-disable global-require */
-
 import webpackConfig from '../../webpack/webpack.dev.babel.mjs';
 import { isProd } from '../config.mjs';
 import addDevMiddlewares from './addDevMiddlewares.mjs';
