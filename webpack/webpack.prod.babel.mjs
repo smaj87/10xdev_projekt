@@ -17,10 +17,7 @@ import webpackBaseBabel from './webpack.base.babel.mjs';
 
 const packageVersion = packageJson.version.replace(/\.+/gi, '_');
 
-const publicPath =
-  process.env.IS_START_LOCAL_PROD === 'true'
-    ? 'http://localhost:3000/'
-    : `todo_public_host/`;
+const publicPath = '/';
 
 const uniqueSourceMapsHash = crypto
   .createHash('md5')
@@ -140,7 +137,7 @@ export default webpackBaseBabel({
       hashDigestLength: 1,
     }),
 
-    ...(process.env.IS_START_LOCAL_PROD === 'true'
+    ...(process.env.IS_START_PROD === 'true'
       ? []
       : [new BundleAnalyzerPlugin()]),
   ],

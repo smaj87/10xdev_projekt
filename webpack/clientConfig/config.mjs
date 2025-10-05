@@ -2,7 +2,7 @@ import { version } from '../../server/utils/version.mjs';
 
 /** @type {import('./types').AppConfig} */
 const APP_CONFIG = {
-  API_URL: '/api',
+  API_URL: '/api/',
   VERSION: version,
   LANGS: true,
 };

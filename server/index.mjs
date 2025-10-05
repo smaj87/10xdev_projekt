@@ -3,7 +3,7 @@
 import Fastify from 'fastify';
 import { resolve } from 'path';
 
-import { buildPath, host, isProd, port, prettyHost } from './config.mjs';
+import { buildPath, host, port, prettyHost } from './config.mjs';
 import logger from './logger.mjs';
 import apiSetup from './middlewares/apiMiddleware.mjs';
 import setup from './middlewares/frontendMiddleware.mjs';
@@ -51,17 +51,13 @@ async function startServer() {
     publicPath: '/',
   });
 
-  // Handle gzipped JS files - only for development and local production
-  if (!isProd) {
-    fastify.addHook('onRequest', async (request, reply) => {
-      if (request.url.endsWith('.js') && !request.url.endsWith('.js.gz')) {
-        const gzUrl = `${request.url}.gz`;
-        request.url = gzUrl;
-        reply.header('Content-Encoding', 'gzip');
-        reply.header('Content-Type', 'application/javascript');
-      }
-    });
-  }
+  fastify.addHook('onRequest', async (request, reply) => {
+    if (request.url.endsWith('.js') && !request.url.endsWith('.js.gz')) {
+      request.url = `${request.url}.gz`;
+      reply.header('Content-Encoding', 'gzip');
+      reply.header('Content-Type', 'application/javascript');
+    }
+  });
 
   // Start server
   try {

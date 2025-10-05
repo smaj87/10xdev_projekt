@@ -19,10 +19,7 @@ export default (options) => ({
   mode: options.mode,
   entry: options.entry,
   output: {
-    path: path.resolve(
-      process.cwd(),
-      process.env.IS_START_LOCAL_PROD === 'true' ? 'build_dev' : 'build',
-    ),
+    path: path.resolve(process.cwd(), 'build'),
     publicPath: '/',
     clean: true,
     ...options.output,
@@ -142,7 +139,7 @@ export default (options) => ({
     // drop any unreachable code.
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
-      IS_START_LOCAL_PROD: false,
+      IS_START_PROD: false,
       ...clientConfig.default.config,
     }),
   ]),

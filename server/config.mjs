@@ -2,9 +2,7 @@ import argv from './argv.mjs';
 
 // Environment configuration
 export const isProd = process.env.NODE_ENV === 'production';
-export const isLocalProd = process.env.IS_START_LOCAL_PROD === 'true';
-
-export const buildPath = isProd && !isLocalProd ? 'build' : 'build_dev';
+export const buildPath = 'build';
 
 // Port configuration
 export const port = parseInt(argv.port || process.env.PORT || '3000', 10);

@@ -24,8 +24,8 @@
     "presetup": "npm i chalk shelljs",
     "prettify": "prettier --write",
     "start": "cross-env NODE_ENV=development node server/index.mjs",
-    "prestart:prod": "cross-env NODE_ENV=production IS_START_LOCAL_PROD=true npm run build",
-    "start:prod": "cross-env NODE_ENV=production IS_START_LOCAL_PROD=true node server/index.mjs"
+    "prestart:prod": "cross-env NODE_ENV=production IS_START_PROD=true npm run build",
+    "start:prod": "cross-env NODE_ENV=production IS_START_PROD=true node server/index.mjs"
   },
   "pre-commit": "lint:staged",
   "dependencies": {
@@ -77,6 +77,7 @@
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "chalk": "5.4.1",
     "circular-dependency-plugin": "5.2.2",
+    "compression-webpack-plugin": "^11.1.0",
     "concurrently": "9.2.0",
     "cross-env": "7.0.3",
     "css-loader": "7.1.2",
