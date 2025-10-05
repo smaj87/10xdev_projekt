@@ -1,7 +1,7 @@
 {
-  "name": "onet-poczta-2",
-  "version": "2.18.65",
-  "description": "Onet Webmail",
+  "name": "10xdev",
+  "version": "0.0.1",
+  "description": "Aplikacja zaliczeniowa",
   "repository": {
     "type": "git",
     "url": "git://github.com/react-boilerplate/react-boilerplate.git"
