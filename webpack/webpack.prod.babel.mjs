@@ -17,11 +17,10 @@ import webpackBaseBabel from './webpack.base.babel.mjs';
 
 const packageVersion = packageJson.version.replace(/\.+/gi, '_');
 
-const origin = 'TODO public host';
 const publicPath =
   process.env.IS_START_LOCAL_PROD === 'true'
     ? 'http://localhost:3000/'
-    : `${origin}/assets`;
+    : `todo_public_host/`;
 
 const uniqueSourceMapsHash = crypto
   .createHash('md5')

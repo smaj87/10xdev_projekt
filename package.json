@@ -24,7 +24,8 @@
     "presetup": "npm i chalk shelljs",
     "prettify": "prettier --write",
     "start": "cross-env NODE_ENV=development node server/index.mjs",
-    "start:prod": "cross-env NODE_ENV=production IS_START_LOCAL_PROD=TRUE node server/index.mjs"
+    "prestart:prod": "cross-env NODE_ENV=production IS_START_LOCAL_PROD=true npm run build",
+    "start:prod": "cross-env NODE_ENV=production IS_START_LOCAL_PROD=true node server/index.mjs"
   },
   "pre-commit": "lint:staged",
   "dependencies": {

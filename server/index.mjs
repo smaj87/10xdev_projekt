@@ -3,12 +3,14 @@
 import Fastify from 'fastify';
 import { resolve } from 'path';
 
-import { host, port, prettyHost } from './config.mjs';
+import { buildPath, host, isProd, port, prettyHost } from './config.mjs';
 import logger from './logger.mjs';
 import setup from './middlewares/frontendMiddleware.mjs';
 
 async function startServer() {
-  // Create Fastify instance with logger
+  // Create Fastify instance without logger to disable default "Server listening at" messages
+  // If you want to enable Fastify logging, change `false` to logger configuration object below:
+  /*
   const fastify = Fastify({
     logger: {
       level: 'info',
@@ -19,6 +21,10 @@ async function startServer() {
         },
       },
     },
+  });
+  */
+  const fastify = Fastify({
+    logger: false, // Disabled Fastify logger - change to logger config object if you want to enable it
   });
 
   // Register graceful shutdown
@@ -35,17 +41,13 @@ async function startServer() {
       });
   });
 
-  // Determine correct build path based on environment
-  const isProd = process.env.NODE_ENV === 'production';
-  const buildPath = isProd ? 'build' : 'build_dev';
-
   // Setup frontend middleware
   await setup(fastify, {
     outputPath: resolve(process.cwd(), buildPath),
     publicPath: '/',
   });
 
-  // Handle gzipped JS files - only for development
+  // Handle gzipped JS files - only for development and local production
   if (!isProd) {
     fastify.addHook('onRequest', async (request, reply) => {
       if (request.url.endsWith('.js') && !request.url.endsWith('.js.gz')) {

@@ -11,6 +11,6 @@ export default () => {
 
   // eslint-disable-next-line no-console
   console.log(
-    `${divider}\nClient info ${version}: - ${libName}\n${node_version}${divider}`,
+    `${divider}\nClient info ${version}: ${libName}\n${node_version}${divider}`,
   );
 };

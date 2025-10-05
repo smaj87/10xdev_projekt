@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 
 import webpackConfig from '../../webpack/webpack.dev.babel.mjs';
+import { isProd } from '../config.mjs';
 import addDevMiddlewares from './addDevMiddlewares.mjs';
 import addProdMiddlewares from './addProdMiddlewares.mjs';
 
@@ -8,11 +9,11 @@ import addProdMiddlewares from './addProdMiddlewares.mjs';
  * Front-end middleware for Fastify
  */
 export default async (fastify, options) => {
-  const isProd = process.env.NODE_ENV === 'production';
-
   if (isProd) {
+    // Production OR local production - serve static files from build folder
     await addProdMiddlewares(fastify, options);
   } else {
+    // Development only - use webpack dev middleware
     await addDevMiddlewares(fastify, webpackConfig);
   }
 
