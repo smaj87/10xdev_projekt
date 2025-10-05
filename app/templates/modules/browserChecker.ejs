@@ -1,0 +1,113 @@
+<!-- START browser checker, redirect if not supported -->
+<script type="text/javascript">
+  try {
+    var redirectIfNecessary = function (name, ver) {
+      var isIE = name === 'IE' && ver < 12;
+      var isFF = name === 'Firefox' && ver < 79;
+      var isOpera = name === 'Opera' && ver < 71;
+      var isSafari = name === 'Safari' && ver < 14;
+      var isChrome = name === 'Chrome' && ver < 85;
+      var isEdge = name === 'Edge' && ver < 85;
+
+      if (isIE || isFF || isOpera || isSafari || isChrome || isEdge) {
+        window.location.replace('<%= BROWSER_UPDATE_URL %>');
+
+        if (isIE) {
+          // IE redirect do not work!
+          setTimeout(function () {
+            document.write(
+              'Ta wersja przeglądarki nie jest przez nas wspierana: <%= BROWSER_UPDATE_URL %>',
+            );
+          }, 0);
+        }
+      }
+    };
+
+    var getOs = function (ua) {
+      var browserInfo = {};
+
+      var osRegexps = [
+        /(Windows)(?:\s*NT)?\s*([\d._]+)/i,
+        /(Mac)\s*OS\s*X?\s*([\d._]+)/i,
+        /(Linux|Macintosh)/i,
+      ];
+      var osMatch = ua.match(/([\d._]+)\s*like\s*(Mac)/i) || [];
+
+      if (osMatch.length) {
+        browserInfo.os = osMatch[2];
+        browserInfo.osVer = (osMatch[1] || '').replaceAll(/_+/ig, '.');
+      } else {
+        for (var i = 0; i < osRegexps.length; i++) {
+          osMatch = ua.match(osRegexps[i]) || [];
+
+          if (osMatch.length) {
+            browserInfo.os = osMatch[1];
+            browserInfo.osVer = (osMatch[2] || '').replaceAll(/_+/ig, '.');
+            break;
+          }
+        }
+      }
+
+      return browserInfo;
+    };
+
+    window.browserInfo = (function (ua) {
+      var browserInfo = getOs(ua),
+        tem,
+        M =
+          ua.match(
+            /(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i,
+          ) || [];
+
+      if (/trident/i.test(M[1])) {
+        tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+
+        browserInfo.name = 'IE';
+        browserInfo.ver = tem[1] || '';
+
+        redirectIfNecessary(browserInfo.name, browserInfo.ver);
+
+        return browserInfo;
+      }
+
+      if (M[1] === 'Chrome') {
+        tem = ua.match(/\b(OPR|Edge?)\/(\d+)/);
+
+        if (tem != null) {
+          browserInfo.name = tem[1].replace('OPR', 'Opera').replace('Edg', 'Edge');
+          browserInfo.ver = tem[2];
+
+          redirectIfNecessary(browserInfo.name, browserInfo.ver);
+
+          return browserInfo;
+        }
+      }
+
+      M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+
+      if ((tem = ua.match(/version\/(\d+)/i)) != null) {
+        M.splice(1, 1, tem[1]);
+      }
+
+      browserInfo.name = M[0];
+      browserInfo.ver = M[1];
+
+      redirectIfNecessary(browserInfo.name, browserInfo.ver);
+
+      return browserInfo;
+    })(navigator.userAgent);
+    // })('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15 (AirWatch Browser v24.08)');
+    // })('Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Version/16.1.1 Safari/605.1.15 (AirWatch Browser v24.08)');
+    // })('Mozilla/5.0 (Macintosh; U; MacOS X 10_14_4; en-US; Valve Steam GameOverlay/1555457005; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.6167.139 Safari/537.36');
+    // })('Mozilla/5.0 (compatible; MSIE 10.0; AOL 9.7; AOLBuild 4343.1028; Windows NT 6.1; WOW64; Trident/7.0)-875');
+    // })('Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.5195.128 Safari/537.36 AOLShield/105.0.5195.5');
+    // })('Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.6312.123 Safari/537.36 AOLShield/123.0.6312.2');
+    // })('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.58 Safari/537.36 (AirWatch Browser v21.09.0.9)');
+    // })('Mozilla/5.0 (X11; Linux x86_64; rv:130.0esr) Gecko/20212819 Chrome/130.0.6723.58');
+    // })('Mozilla/5.001 (Macintosh; N; PPC; ja) Gecko/25250101');
+    // })('');
+  } catch (e) {
+    redirectIfNecessary('IE', 5);
+  }
+</script>
+<!-- END browser checker, redirect if not supported -->

@@ -1,0 +1,20 @@
+{
+  "processors": ["stylelint-processor-styled-components"],
+  "overrides": [
+    {
+      "files": ["**/*.{js,jsx,ts,tsx}"],
+      "customSyntax": "@stylelint/postcss-css-in-js"
+    }
+  ],
+  "extends": [
+    "stylelint-config-recommended"
+  ],
+  "rules": {
+    "no-empty-source": null,
+    "media-query-no-invalid": null,
+    "property-no-unknown": null
+  },
+  "ignoreFiles": [
+    "app/components/Banners/Static/template_v1/styles.js"
+  ]
+}

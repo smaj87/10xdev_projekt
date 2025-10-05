@@ -1,0 +1,4 @@
+[core]
+    longpaths = true
+    autocrlf = false
+    eol = lf

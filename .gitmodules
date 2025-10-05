@@ -1,0 +1,3 @@
+[submodule "app/commons"]
+	path = app/commons
+	url = https://github.com/Ringier-Axel-Springer-PL/poc-commons-3_0.git

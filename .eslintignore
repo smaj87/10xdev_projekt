@@ -1,0 +1,17 @@
+coverage
+build
+build_dev
+build_sw
+build_test
+node_modules
+stats.json
+package-lock.json
+
+# Cruft
+.DS_Store
+npm-debug.log
+.idea
+.project.init
+
+internals/scripts
+app/statics

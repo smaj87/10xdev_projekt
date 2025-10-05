@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "baseUrl": "./app",
+    "paths": {
+      "*": ["./*"],
+      "hoc/*": ["./containers/HOC/*"]
+    }
+  },
+  "exclude": ["node_modules", "build"]
+}

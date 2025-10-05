@@ -1,0 +1,18 @@
+# Don't check auto-generated stuff into git
+coverage
+build
+build_dev
+build_sw
+build_test
+node_modules
+stats.json
+package-lock.json
+
+# Cypress
+cypress/screenshots/*
+
+# Cruft
+.DS_Store
+npm-debug.log
+.idea
+.project.init
