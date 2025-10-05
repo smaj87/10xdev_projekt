@@ -1,35 +1,74 @@
 /* eslint consistent-return:0 import/order:0 */
 
-import express from 'express';
+import Fastify from 'fastify';
 import { resolve } from 'path';
 
 import { host, port, prettyHost } from './config.mjs';
 import logger from './logger.mjs';
 import setup from './middlewares/frontendMiddleware.mjs';
 
-const app = express();
+async function startServer() {
+  // Create Fastify instance with logger
+  const fastify = Fastify({
+    logger: {
+      level: 'info',
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+        },
+      },
+    },
+  });
 
-// If you need a backend, e.g. an API, add your custom backend-specific middleware here
-// app.use('/api', myApi);
+  // Register graceful shutdown
+  process.on('SIGINT', () => {
+    fastify
+      .close()
+      .then(() => {
+        logger.appStopped();
+        process.exit(0);
+      })
+      .catch((err) => {
+        logger.error(err);
+        process.exit(1);
+      });
+  });
 
-// In production we need to pass these values in instead of relying on webpack
-setup(app, {
-  outputPath: resolve(process.cwd(), 'build_dev'),
-  publicPath: '/',
-});
+  // Determine correct build path based on environment
+  const isProd = process.env.NODE_ENV === 'production';
+  const buildPath = isProd ? 'build' : 'build_dev';
 
-// use the gzipped bundle
-app.get('*.js', (req, res, next) => {
-  req.url = req.url + '.gz'; // eslint-disable-line
-  res.set('Content-Encoding', 'gzip');
-  next();
-});
+  // Setup frontend middleware
+  await setup(fastify, {
+    outputPath: resolve(process.cwd(), buildPath),
+    publicPath: '/',
+  });
 
-// Start your app.
-app.listen(port, host, async (err) => {
-  if (err) {
-    return logger.error(err.message);
+  // Handle gzipped JS files - only for development
+  if (!isProd) {
+    fastify.addHook('onRequest', async (request, reply) => {
+      if (request.url.endsWith('.js') && !request.url.endsWith('.js.gz')) {
+        const gzUrl = `${request.url}.gz`;
+        request.url = gzUrl;
+        reply.header('Content-Encoding', 'gzip');
+        reply.header('Content-Type', 'application/javascript');
+      }
+    });
   }
 
-  logger.appStarted(port, prettyHost);
-});
+  // Start server
+  try {
+    await fastify.listen({
+      port,
+      host: host || '0.0.0.0',
+    });
+
+    logger.appStarted(port, prettyHost);
+  } catch (err) {
+    logger.error(err.message);
+    process.exit(1);
+  }
+}
+
+startServer();

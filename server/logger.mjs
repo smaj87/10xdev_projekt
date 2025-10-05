@@ -37,6 +37,11 @@ const logger = {
 
     console.log(footer);
   },
+
+  // Called when the server is stopped
+  appStopped: () => {
+    console.log(`\nServer stopped ${chalk.red('✗')}`);
+  },
 };
 
 export default logger;

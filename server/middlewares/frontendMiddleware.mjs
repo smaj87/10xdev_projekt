@@ -5,16 +5,16 @@ import addDevMiddlewares from './addDevMiddlewares.mjs';
 import addProdMiddlewares from './addProdMiddlewares.mjs';
 
 /**
- * Front-end middleware
+ * Front-end middleware for Fastify
  */
-export default (app, options) => {
+export default async (fastify, options) => {
   const isProd = process.env.NODE_ENV === 'production';
 
   if (isProd) {
-    addProdMiddlewares(app, options);
+    await addProdMiddlewares(fastify, options);
   } else {
-    addDevMiddlewares(app, webpackConfig);
+    await addDevMiddlewares(fastify, webpackConfig);
   }
 
-  return app;
+  return fastify;
 };

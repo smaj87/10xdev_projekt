@@ -8,6 +8,8 @@ import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
+import { getHeadersForAsset } from '../utils/commonHeaders.mjs';
+
 const fs = createFsFromVolume(new Volume());
 fs.join = path.join.bind(path);
 
@@ -19,28 +21,27 @@ function createWebpackMiddleware(compiler, publicPath) {
     stats: 'errors-only',
     outputFileSystem: fs,
     headers: (req, res) => {
-      const ext = path.extname(req.path);
-
-      switch (ext) {
-        case '.woff':
-          res.setHeader('Cache-Control', 'max-age=604800, public');
-          res.setHeader('Content-Type', 'font/woff');
-          break;
-        default:
-      }
+      const headers = getHeadersForAsset(req);
+      Object.entries(headers).forEach(([key, value]) => {
+        res.setHeader(key, value);
+      });
     },
   });
 }
 
-export default function addDevMiddlewares(app, webpackConfig) {
+export default async function addDevMiddlewares(fastify, webpackConfig) {
   const compiler = webpack(webpackConfig);
   const middleware = createWebpackMiddleware(
     compiler,
     webpackConfig.output.publicPath,
   );
 
-  app.use(middleware);
-  app.use(webpackHotMiddleware(compiler));
+  // Register @fastify/middie to support Express-style middleware
+  await fastify.register(import('@fastify/middie'));
+
+  // Use webpack dev middleware
+  fastify.use(middleware);
+  fastify.use(webpackHotMiddleware(compiler));
 
   // Listen for the 'done' event when the build is complete
   compiler.hooks.done.tap('BuildCompletePlugin', () => {
@@ -48,8 +49,8 @@ export default function addDevMiddlewares(app, webpackConfig) {
       const cypressCommand = `npx cypress run --env APP=${process.env.APP}`;
 
       const cypressProcess = spawn(cypressCommand, {
-        shell: true, // Required for running npm scripts
-        stdio: 'inherit', // Pipe the output to the parent terminal
+        shell: true,
+        stdio: 'inherit',
       });
 
       cypressProcess.on('close', (code) => {
@@ -66,12 +67,13 @@ export default function addDevMiddlewares(app, webpackConfig) {
     }
   });
 
-  app.get('*', async (req, res) => {
+  // Catch-all route for dev server
+  fastify.get('*', async (request, reply) => {
     try {
       const file = await readFile(path.join(compiler.outputPath, 'index.html'));
-      res.send(file.toString());
-    } catch {
-      res.sendStatus(404);
+      reply.type('text/html').send(file.toString());
+    } catch (error) {
+      reply.code(404).send('Not Found');
     }
   });
 }

@@ -1,5 +1,3 @@
-import compression from 'compression';
-import express from 'express';
 import path from 'path';
 
 import packageJson from '../../package.json' with { type: 'json' };
@@ -7,17 +5,35 @@ import packageJson from '../../package.json' with { type: 'json' };
 const packageVersion = packageJson.version.replace(/\.+/gi, '_');
 const indexFilePath = `v${packageVersion}/index.html`;
 
-export default function addProdMiddlewares(app, options) {
+export default async function addProdMiddlewares(fastify, options) {
   const publicPath = options.publicPath || '/';
   const outputPath = options.outputPath || path.resolve(process.cwd(), 'build');
 
-  // compression middleware compresses your server responses which makes them
-  // smaller (applies also to assets). You can read more about that technique
-  // and other good practices on official Express.js docs http://mxs.is/googmy
-  app.use(compression());
-  app.use(publicPath, express.static(outputPath));
+  // Register compression plugin
+  await fastify.register(import('@fastify/compress'), {
+    global: true,
+    threshold: 1024,
+  });
 
-  app.get('*', (req, res) =>
-    res.sendFile(path.resolve(outputPath, indexFilePath)),
-  );
+  // Register static file serving with wildcard enabled (handles SPA routing)
+  await fastify.register(import('@fastify/static'), {
+    root: outputPath,
+    prefix: publicPath,
+    wildcard: true, // This handles the catch-all routing for SPA
+    setHeaders: (reply, pathname) => {
+      // Add cache headers for static assets
+      if (pathname.endsWith('.woff') || pathname.endsWith('.woff2')) {
+        reply.header('Cache-Control', 'max-age=604800, public');
+      }
+    },
+  });
+
+  // Add a specific route for index.html fallback if needed
+  fastify.setNotFoundHandler(async (request, reply) => {
+    // For non-API routes, serve the index.html
+    if (!request.url.startsWith('/api')) {
+      return reply.sendFile(indexFilePath);
+    }
+    reply.code(404).send({ error: 'Not Found' });
+  });
 }
