@@ -1,0 +1,9 @@
+---
+description: 'Calls push.propmt.md file and create a pull request'
+---
+Wykonaj polecenia sekwencyjnie. Czekaj na zakończenie polecenia przed rozpoczęciem następnego.
+
+## Polecenia
+1. Wykonaj polecenia z pliku @push.prompt.md
+2. Niezależnie od wyniku polecenia 1, stworz pull request do mastera
+3. Wygeneruj podsumowanie z klikalnym linkiem do pull request w GitHub
