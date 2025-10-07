@@ -51,13 +51,13 @@ async function startServer() {
     publicPath: '/',
   });
 
-  fastify.addHook('onRequest', async (request, reply) => {
-    if (request.url.endsWith('.js') && !request.url.endsWith('.js.gz')) {
-      request.url = `${request.url}.gz`;
-      reply.header('Content-Encoding', 'gzip');
-      reply.header('Content-Type', 'application/javascript');
-    }
-  });
+  // fastify.addHook('onRequest', async (request, reply) => {
+  //   if (request.url.endsWith('.js') && !request.url.endsWith('.js.gz')) {
+  //     request.url = `${request.url}.gz`;
+  //     reply.header('Content-Encoding', 'gzip');
+  //     reply.header('Content-Type', 'application/javascript');
+  //   }
+  // });
 
   // Start server
   try {
