@@ -14,7 +14,5 @@
     "media-query-no-invalid": null,
     "property-no-unknown": null
   },
-  "ignoreFiles": [
-    "app/components/Banners/Static/template_v1/styles.js"
-  ]
+  "ignoreFiles": []
 }
