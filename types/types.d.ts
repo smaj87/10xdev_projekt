@@ -9,13 +9,6 @@ declare global {
       osVer: string;
     };
   }
-
-  interface ReadonlyArray<T> {
-    includes<U>(x: U & (T & U extends never ? never : unknown)): boolean;
-  }
-  interface Array<T> {
-    includes<U>(x: U & (T & U extends never ? never : unknown)): boolean;
-  }
 }
 
 export {};
