@@ -1,6 +1,3 @@
----
-description: 'Push changes to git repository'
----
 Wykonaj polecenia sekwencyjnie. Czekaj na zakończenie polecenia przed rozpoczęciem następnego.
 
 ## Polecenia
