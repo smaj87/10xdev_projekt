@@ -10,17 +10,18 @@ Użytkownicy gubią się w dużej liczbie zadań do wykonania: trudno śledzić,
 1. Autoryzacja i uwierzytelnianie:
    - rejestracja, logowanie, wylogowanie
    - role: zwykły użytkownik, administrator
+   - ciastka sesyjne z HttpOnly
 2. Zarządzanie listami:
    - tworzenie, edycja
    - przeglądanie list aktywnych i archiwalnych (archiwalne widoczne 3 miesiące)
    - archiwizacja list
    - priorytet (domyślny: normalny), termin (opcjonalny)
    - kategorie (np. praca, dom, zakupy)
-   - filtrowanie i sortowanie po kategorii, priorytecie, terminie
+   - filtrowanie i sortowanie po kategorii, priorytecie i terminie.
 3. Zarządzanie zadaniami:
    - dodawanie, edytowanie, usuwanie pozycji
    - status: niezrobione, w trakcie, zrobione
-   - filtrowanie po statusie
+   - filtrowanie po statusie.
    - zadania posortowane wg dodania z możliwością zmiany kolejności (przeciągnij i upuść)
 4. Współdzielenie i synchronizacja:
    - zapraszanie innych użytkowników do listy

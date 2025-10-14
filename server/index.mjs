@@ -1,14 +1,20 @@
 /* eslint consistent-return:0 import/order:0 */
 
+import fastifyCookie from '@fastify/cookie';
 import Fastify from 'fastify';
 import { resolve } from 'path';
 
 import { buildPath, host, port, prettyHost } from './config.mjs';
+import { initializeDatabase } from './db/database.mjs';
 import logger from './logger.mjs';
 import apiSetup from './middlewares/apiMiddleware.mjs';
 import setup from './middlewares/frontendMiddleware.mjs';
 
 async function startServer() {
+  // Initialize database before starting server
+  initializeDatabase();
+  logger.info('Database initialized successfully');
+
   // Create Fastify instance without logger to disable default "Server listening at" messages
   // If you want to enable Fastify logging, change `false` to logger configuration object below:
   /*
@@ -26,6 +32,16 @@ async function startServer() {
   */
   const fastify = Fastify({
     logger: false, // Disabled Fastify logger - change to logger config object if you want to enable it
+  });
+
+  // Register cookie plugin
+  await fastify.register(fastifyCookie, {
+    secret: process.env.COOKIE_SECRET || 'default-secret-change-in-production',
+    parseOptions: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    },
   });
 
   // Register graceful shutdown

@@ -7,8 +7,12 @@ Aplikacja to menadżer zadań do wykonania. Użytkownik może dodawać, edytowa�
 - `app/components/` - Komponenty UI (np. TaskItem, TaskList)
 - `app/containers/` - Komponenty kontenerowe (np. TaskContainer)
 - `app/templates/` - Szablony stron (dla index.html)
-- `server` - Backend aplikacji (np. API do zarządzania zadaniami)
 - `webpack/` - Konfiguracja Webpacka
+- `server` - Backend aplikacji (np. API do zarządzania zadaniami)
+- `server/middlewares/` - Middleware Fastify (np. logowanie, obsługa błędów, routing)
+- `server/routes/` - Definicje tras API (np. CRUD dla zadań)
+- `server/db/` - Logika bazy danych
+- `server/utils/` - Narzędzia pomocnicze backendu
 
 ## Biblioteki i Frameworki
 - React - Biblioteka do budowy interfejsów użytkownika

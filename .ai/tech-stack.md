@@ -1,5 +1,6 @@
 Frontend:
  - Preact 10 zapewnia interaktywność
+ - preact/compat do kompatybilności z ekosystemem Reacta
  - Redux 5 do zarządzania stanem aplikacji
  - Redux-Thunk do obsługi asynchronicznych akcji w Reduxie
  - Typescript 5 dla statycznego typowania kodu i lepszego wsparcia IDE

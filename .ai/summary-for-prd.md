@@ -1,4 +1,4 @@
-<conversation_summary> 
+ <conversation_summary> 
   <decisions>
     1. Zdefiniować zakres problemu obejmujący zapamiętywanie, organizację, kategoryzację, filtrowanie oraz sortowanie list, oraz zadań w listach.
     2. Skupić się wyłącznie na pilnych potrzebach użytkownika.

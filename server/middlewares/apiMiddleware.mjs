@@ -1,4 +1,5 @@
 import { apiPrefix } from '../config.mjs';
+import ErrorLogService from '../services/errorLog.service.mjs';
 import { loadRoutes } from '../utils/routeLoader.mjs';
 
 /**
@@ -9,12 +10,67 @@ export default async (fastify) => {
   await fastify.register(
     async (apiRoutes) => {
       // Global error handler for validation errors - applies to all API routes
-      apiRoutes.setErrorHandler((error, request, reply) => {
+      apiRoutes.setErrorHandler(async (error, request, reply) => {
+        // Validation errors (400)
         if (error.validation) {
-          reply.status(400).send('Nieprawidłowe dane wejściowe');
-        } else {
-          reply.send(error);
+          const statusCode = 400;
+          const errorMessage = error.message || 'Invalid input data';
+
+          // Log validation errors
+          await ErrorLogService.logError({
+            user_id: request.user?.id || null,
+            endpoint: request.url,
+            method: request.method,
+            status_code: statusCode,
+            error_message: errorMessage,
+            request_data: JSON.stringify({
+              query: request.query,
+              params: request.params,
+              body: request.body,
+            }),
+            response_data: null,
+            user_agent: request.headers['user-agent'],
+          });
+
+          return reply.status(statusCode).send({
+            statusCode,
+            error: 'Bad Request',
+            message: errorMessage,
+            details: error.validation,
+          });
         }
+
+        // Other errors (500)
+        const statusCode = error.statusCode || 500;
+        const errorMessage = error.message || 'Internal Server Error';
+
+        // Log all 5xx errors
+        if (statusCode >= 500) {
+          // eslint-disable-next-line no-console
+          console.error('API Error:', error);
+
+          await ErrorLogService.logError({
+            user_id: request.user?.id || null,
+            endpoint: request.url,
+            method: request.method,
+            status_code: statusCode,
+            error_message: errorMessage,
+            request_data: JSON.stringify({
+              query: request.query,
+              params: request.params,
+              body: request.body,
+            }),
+            response_data: null,
+            user_agent: request.headers['user-agent'],
+          });
+        }
+
+        return reply.status(statusCode).send({
+          statusCode,
+          error: statusCode >= 500 ? 'Internal Server Error' : 'Error',
+          message:
+            statusCode >= 500 ? 'An unexpected error occurred' : errorMessage,
+        });
       });
 
       // Status endpoint - returns 200 OK for all HTTP methods

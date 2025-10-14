@@ -12,7 +12,6 @@
 ### Aliasy ścieżek
 - `components/*` → `app/components/*`
 - `containers/*` → `app/containers/*`
-- `hoc/*` → `app/containers/HOC/*`
 - `images/*` → `app/images/*`
 - `translations/*` → `app/translations/*`
 - `utils/*` → `app/utils/*`
@@ -64,6 +63,8 @@
 - Używaj arrow functions gdy to możliwe
 - Unix line endings (`\n`)
 - Do nasłuchiwania na zmianę języka w hooks, w deps używaj `t.lang`, np. `useEffect(() => { ... }, [t.lang]);`
+- w funkcjach zawsze uzywaj jednego `return` na końcu. Stosuj konwencje: inicjalizacja zmiennych na początku, przetwarzanie w środku i jeden return na końcu funkcji
+- jeżeli catch nie używa error, rób: `catch { ... }`
 
 ### Error Handling
 - Pozwalaj na puste bloki catch: `catch (error) {}`

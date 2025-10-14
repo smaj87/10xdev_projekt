@@ -1,6 +1,7 @@
 import { ErrorInfo } from 'components/utils/react';
 import {
   ABORT_CAUSE_CODE,
+  CHECK_STATUS_CAUSE_CODE,
   FETCH_FAILURE_CAUSE_CODE,
   RequestError,
 } from 'components/utils/request';
@@ -32,9 +33,11 @@ export const reportCatchError = async (error: Error, info: ErrorInfo) => {
 export const reportCatchErrorFromAction = async (error: Error) => {
   if (
     error?.message &&
-    ![FETCH_FAILURE_CAUSE_CODE, ABORT_CAUSE_CODE].includes(
-      (error?.cause as RequestError['cause']) || '',
-    )
+    ![
+      FETCH_FAILURE_CAUSE_CODE,
+      ABORT_CAUSE_CODE,
+      CHECK_STATUS_CAUSE_CODE,
+    ].includes((error?.cause as RequestError['cause']) || '')
   ) {
     await sendMsg(error?.message ? `CUSTOM_${error?.message}` : '');
   }
