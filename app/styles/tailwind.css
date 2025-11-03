@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Configure Tailwind to scan these paths for class names */
+@source "../**/*.{js,jsx,ts,tsx,mjs}";
+@source "../templates/**/*.{html,ejs}";
+
+/* Custom styles */

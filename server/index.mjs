@@ -1,6 +1,7 @@
 /* eslint consistent-return:0 import/order:0 */
 
 import fastifyCookie from '@fastify/cookie';
+import fastifyCors from '@fastify/cors';
 import Fastify from 'fastify';
 import { resolve } from 'path';
 
@@ -42,6 +43,14 @@ async function startServer() {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
     },
+  });
+
+  // Register CORS plugin to handle preflight OPTIONS requests automatically
+  await fastify.register(fastifyCors, {
+    origin: true, // Allow all origins in development, configure for production
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Register graceful shutdown

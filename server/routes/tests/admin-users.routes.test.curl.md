@@ -5,18 +5,28 @@ Przed uruchomieniem testów, ustaw zmienne:
 
 ```cmd
 set BASE_URL=http://localhost:3000
-set ADMIN_SESSION_ID=YOUR_ADMIN_SESSION_ID_HERE
 ```
 
 Lub dla PowerShell:
 ```powershell
 $BASE_URL="http://localhost:3000"
-$ADMIN_SESSION_ID="YOUR_ADMIN_SESSION_ID_HERE"
 ```
 
 **Uwaga:** Aplikacja używa ciasteczek sesyjnych (sessionId), nie JWT. Musisz najpierw się zalogować i uzyskać sessionId z ciasteczka.
 
 ---
+
+## Przygotowanie - logowanie jako admin
+
+Uruchomienie servera dev: `npm run start`
+
+```cmd
+curl -X POST "%BASE_URL%/api/auth/login" ^
+  -H "Content-Type: application/json" ^
+  -d "{\"email\":\"admin@admin.com\",\"password\":\"admin\"}" ^
+  -v
+```
+- W odpowiedzi znajdź nagłówek `Set-Cookie: sessionId=...`, ciastka powinny iść w curl z każdym żądaniem do chronionych endpointów.
 
 ## 1. Test podstawowy - pobranie wszystkich użytkowników (domyślna paginacja)
 

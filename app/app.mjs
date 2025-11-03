@@ -1,3 +1,6 @@
+// Import Tailwind CSS
+import './styles/tailwind.css';
+
 import { setGlobalDevModeChecks } from 'reselect';
 
 // import 'components/utils/configurePreact';

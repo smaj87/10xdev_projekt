@@ -245,6 +245,198 @@ class UserService {
 
     return result;
   }
+
+  /**
+   * Get user by ID
+   * @param {number} userId - User ID
+   * @returns {Promise<Object|null>} User object or null
+   */
+  async getUserById(userId) {
+    let result = null;
+
+    try {
+      const query = `
+        SELECT id, email, role, is_blocked, theme, created_at, updated_at
+        FROM users
+        WHERE id = ?
+      `;
+      const user = db.prepare(query).get(userId);
+
+      if (user) {
+        result = {
+          ...user,
+          is_blocked: Boolean(user.is_blocked),
+          created_at: new Date(user.created_at).toISOString(),
+          updated_at: new Date(user.updated_at).toISOString(),
+        };
+      }
+    } catch {
+      throw new Error('Failed to retrieve user by ID');
+    }
+
+    return result;
+  }
+
+  /**
+   * Check if email exists (excluding specific user ID)
+   * @param {string} email - Email to check
+   * @param {number} [excludeUserId] - User ID to exclude from check
+   * @returns {Promise<boolean>} True if email exists
+   */
+  async emailExists(email, excludeUserId = null) {
+    let result = false;
+
+    try {
+      const query = `
+        SELECT COUNT(*) as count
+        FROM users
+        WHERE email = ? AND id != ?
+      `;
+      const countResult = db.prepare(query).get(email, excludeUserId || 0);
+      result = countResult.count > 0;
+    } catch {
+      throw new Error('Failed to check email existence');
+    }
+
+    return result;
+  }
+
+  /**
+   * Hash password using bcrypt
+   * @param {string} password - Plain text password
+   * @returns {Promise<string>} Hashed password
+   */
+  async hashPassword(password) {
+    let hashedPassword = '';
+
+    try {
+      const saltRounds = 10;
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    } catch {
+      throw new Error('Failed to hash password');
+    }
+
+    return hashedPassword;
+  }
+
+  /**
+   * Create new user with specific ID
+   * @param {number} userId - User ID
+   * @param {Object} data - User data
+   * @param {string} data.email - Email address
+   * @param {string} data.password_hash - Hashed password
+   * @param {string} [data.role='user'] - User role
+   * @param {boolean} [data.is_blocked=false] - Block status
+   * @param {string|null} [data.theme=null] - Interface theme
+   * @returns {Promise<Object>} Created user
+   */
+  async createUser(userId, data) {
+    try {
+      const query = `
+        INSERT INTO users (id, email, password_hash, role, is_blocked, theme)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      db.prepare(query).run(
+        userId,
+        data.email,
+        data.password_hash,
+        data.role || 'user',
+        data.is_blocked ? 1 : 0,
+        data.theme || null,
+      );
+
+      // Retrieve and return the created user
+      const createdUser = await this.getUserById(userId);
+      return createdUser;
+    } catch {
+      throw new Error('Failed to create user');
+    }
+  }
+
+  /**
+   * Update existing user
+   * @param {number} userId - User ID
+   * @param {Object} data - Partial user data
+   * @param {string} [data.email] - Email address
+   * @param {string} [data.password_hash] - Hashed password
+   * @param {string} [data.role] - User role
+   * @param {boolean} [data.is_blocked] - Block status
+   * @param {string} [data.theme] - Interface theme
+   * @returns {Promise<Object>} Updated user
+   */
+  async updateUser(userId, data) {
+    try {
+      const updates = [];
+      const params = [];
+
+      if (data.email !== undefined) {
+        updates.push('email = ?');
+        params.push(data.email);
+      }
+      if (data.password_hash !== undefined) {
+        updates.push('password_hash = ?');
+        params.push(data.password_hash);
+      }
+      if (data.role !== undefined) {
+        updates.push('role = ?');
+        params.push(data.role);
+      }
+      if (data.is_blocked !== undefined) {
+        updates.push('is_blocked = ?');
+        params.push(data.is_blocked ? 1 : 0);
+      }
+      if (data.theme !== undefined) {
+        updates.push('theme = ?');
+        params.push(data.theme);
+      }
+
+      if (updates.length === 0) {
+        throw new Error('No fields to update');
+      }
+
+      params.push(userId);
+
+      const query = `
+        UPDATE users
+        SET ${updates.join(', ')}
+        WHERE id = ?
+      `;
+
+      db.prepare(query).run(...params);
+
+      // Retrieve and return the updated user
+      const updatedUser = await this.getUserById(userId);
+      return updatedUser;
+    } catch {
+      throw new Error('Failed to update user');
+    }
+  }
+
+  /**
+   * Delete user by ID
+   * @param {number} userId - User ID
+   * @returns {Promise<boolean>} True if user was deleted
+   */
+  async deleteUser(userId) {
+    let result = false;
+
+    try {
+      // Start transaction by deleting related sessions first
+      const deleteSessionsQuery = `DELETE FROM user_sessions WHERE user_id = ?`;
+      db.prepare(deleteSessionsQuery).run(userId);
+
+      // Then delete the user
+      const deleteUserQuery = `DELETE FROM users WHERE id = ?`;
+      const deleteResult = db.prepare(deleteUserQuery).run(userId);
+
+      result = deleteResult.changes > 0;
+    } catch {
+      throw new Error('Failed to delete user');
+    }
+
+    return result;
+  }
 }
 
 export default new UserService();

@@ -2,9 +2,9 @@
  * Authentication API Routes
  * Endpoints: POST /api/auth/login, GET /api/auth/logout
  */
-import { authMiddleware } from '../middlewares/auth.middleware.mjs';
 import ErrorLogService from '../services/errorLog.service.mjs';
 import UserService from '../services/user.service.mjs';
+import { registerMethodNotAllowed } from '../utils/methodNotAllowed.mjs';
 
 export default async (fastify) => {
   /**
@@ -124,7 +124,7 @@ export default async (fastify) => {
           httpOnly: true,
           path: '/',
           sameSite: 'strict',
-          maxAge: 604800,
+          maxAge: 28800, // 8 hours
           secure: isProduction,
         });
       }
@@ -137,89 +137,85 @@ export default async (fastify) => {
    * GET /auth/logout
    * Logout user and destroy session
    */
-  fastify.get(
-    '/auth/logout',
-    {
-      preHandler: authMiddleware,
-    },
-    async (request, reply) => {
-      let statusCode = 204;
-      let response = null;
-      let shouldClearCookie = false;
+  fastify.get('/auth/logout', async (request, reply) => {
+    let statusCode = 204;
+    let response = null;
+    let shouldClearCookie = false;
 
-      try {
-        const sessionId = request.cookies?.sessionId;
+    try {
+      const sessionId = request.cookies?.sessionId;
 
-        if (!sessionId) {
-          statusCode = 409;
+      if (!sessionId) {
+        statusCode = 409;
+        response = {
+          statusCode: 409,
+          error: 'Unauthorized',
+          message: 'Authentication required',
+        };
+      } else {
+        // Verify session exists and is valid
+        const user = await UserService.getUserBySession(sessionId);
+
+        if (!user) {
+          statusCode = 401;
           response = {
-            statusCode: 409,
+            statusCode: 401,
             error: 'Unauthorized',
-            message: 'Authentication required',
+            message: 'Invalid or expired session',
           };
         } else {
           await UserService.deleteSession(sessionId);
           shouldClearCookie = true;
           statusCode = 204;
         }
-      } catch (error) {
-        await ErrorLogService.logError({
-          userId: request.user?.id || null,
-          endpoint: '/auth/logout',
-          method: 'GET',
-          statusCode: 500,
-          errorMessage: error.message,
-          requestData: null,
-          userAgent: request.headers['user-agent'],
-        });
-
-        statusCode = 500;
-        response = {
-          statusCode: 500,
-          error: 'Internal Server Error',
-          message: 'Logout failed',
-        };
       }
-
-      if (shouldClearCookie) {
-        reply.clearCookie('sessionId', { path: '/' });
-      }
-
-      if (response) {
-        return reply.status(statusCode).send(response);
-      }
-
-      return reply.status(statusCode).send();
-    },
-  );
-
-  /**
-   * Fallback for unsupported methods on /auth/login
-   */
-  fastify.all('/auth/login', async (request, reply) => {
-    if (request.method !== 'POST') {
-      return reply.status(405).send({
-        statusCode: 405,
-        error: 'Method Not Allowed',
-        message: `Method ${request.method} not allowed for this endpoint`,
+    } catch (error) {
+      await ErrorLogService.logError({
+        userId: null,
+        endpoint: '/auth/logout',
+        method: 'GET',
+        statusCode: 500,
+        errorMessage: error.message,
+        requestData: null,
+        userAgent: request.headers['user-agent'],
       });
+
+      statusCode = 500;
+      response = {
+        statusCode: 500,
+        error: 'Internal Server Error',
+        message: 'Logout failed',
+      };
     }
 
-    return undefined;
+    if (shouldClearCookie) {
+      reply.clearCookie('sessionId', { path: '/' });
+    }
+
+    if (response) {
+      return reply.status(statusCode).send(response);
+    }
+
+    return reply.status(statusCode).send();
   });
 
   /**
-   * Fallback for unsupported methods on /auth/logout
+   * Method Not Allowed handlers for /auth/login (all except POST)
    */
-  fastify.all('/auth/logout', async (request, reply) => {
-    if (request.method !== 'GET') {
-      return reply.status(405).send({
-        statusCode: 405,
-        error: 'Method Not Allowed',
-        message: `Method ${request.method} not allowed for this endpoint`,
-      });
-    }
+  registerMethodNotAllowed(fastify, '/auth/login', [
+    'GET',
+    'PUT',
+    'DELETE',
+    'PATCH',
+  ]);
 
-    return undefined;
-  });
+  /**
+   * Method Not Allowed handlers for /auth/logout (all except GET)
+   */
+  registerMethodNotAllowed(fastify, '/auth/logout', [
+    'POST',
+    'PUT',
+    'DELETE',
+    'PATCH',
+  ]);
 };

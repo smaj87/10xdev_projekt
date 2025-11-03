@@ -5,7 +5,7 @@
 - Category (`categories` table)
 - List (`lists` table)
 - Task (`tasks` table)
-- List Collaborator (`list_collaborators` table)
+- List Collaborator (`collaborators` table)
 - Error Log (`error_logs` table)
 - User Session (`user_sessions` table)
 
@@ -51,14 +51,17 @@
   ```
 
 #### Update User Role / Blocking (admin only)
-- Method: PATCH
+- Method: PUT
 - URL: /api/admin/users/{userId}
-- Description: Change user role or block/unblock user
+- Description: Add new user or Change user data if existed:  role, block/unblock, password, email
+- email must be unique, password min length 8
 - Request Body (partial):
   ```json
-  { "role": "admin" | "user", "is_blocked": true | false }
+  { "role": "admin" | "user", "is_blocked": true | false, "email": "string - valid email", "password": "new_pwd" }
   ```
-- Response (200): updated user object
+- Response (200): add/updated user object
+- Errors:
+  - 400: Validation errors, email already exists, password too short
 
 ### Categories
 
@@ -86,19 +89,24 @@
 
 #### List User's Lists
 - GET /api/lists
-- Description: Retrieve active and/or archived lists for the current user
+- Description: Retrieve active and/or archived lists for the current user with tasks and collaborators
 - Query Params:
   - `archived` (true|false)
   - `category_id`, `priority`, `due_date` (filters)
   - `sort_by` (title|due_date|priority|created_at), `order` (asc|desc)
-  - `page`, `limit`
 - Response: 200, paginated lists
+- queryParams:
+  - `archived`: boolean, filter by archived status, not set = only active
+  - `category_id`: integer, filter by category, not set = all categories
+  - `priority`: string, filter by priority (low, normal, high), not set = all priorities
+  - `sort_by`: string, field to sort by (priority, due_date, category_id), not set = priority desc, due_date asc
 
 #### Create List
-- POST /api/lists
+- PUT /api/lists
 - Body:
   ```json
   {
+    "id": [number],
     "title": "My List",
     "category_id": 1,
     "priority": "normal", // optional, default "normal"
@@ -107,29 +115,16 @@
   ```
 - Response: 201, created list
 - Validation: title required, priority in [low,normal,high]
-
-#### Get Single List
-- GET /api/lists/{listId}
-- Response: 200, list with tasks and collaborators
-
-#### Update List
-- PATCH /api/lists/{listId}
-- Body: partial list fields including `is_archived`
-- Response: 200
-- Trigger: if `is_archived` changed to true, `archived_at` set by DB
+- add new list if not existed, title is required
+- update existing list if id provided, only owner can update, id and at least one field to update required
 
 #### Delete List (admin only, archived only)
 - DELETE /api/lists/{listId}
 - Response: 204
+- Validation: list must be archived
+- Remove also all tasks and collaborators from the list
 
 ### Tasks
-
-#### List Tasks in a List
-- GET /api/lists/{listId}/tasks
-- Query Params:
-  - `status` filter
-  - `sort_by` (sort_order|created_at), `order`
-- Response: 200, array of tasks
 
 #### Create Task
 - POST /api/lists/{listId}/tasks
@@ -173,12 +168,6 @@
 - GET /api/admin/error-logs
 - Query Params: `user_id`, `status_code`, `endpoint`, `page`, `limit`
 - Response: paginated logs
-
-### Sessions
-
-#### Refresh Session / Check
-- GET /api/auth/session
-- Response: 200, session info
 
 ## 3. Authentication and Authorization
 - Mechanism: HTTP-only cookie `sessionId` on login, backed by `user_sessions` table

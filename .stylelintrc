@@ -12,7 +12,22 @@
   "rules": {
     "no-empty-source": null,
     "media-query-no-invalid": null,
-    "property-no-unknown": null
+    "property-no-unknown": null,
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "source",
+          "theme",
+          "config",
+          "plugin",
+          "utility",
+          "variant",
+          "layer",
+          "tailwind"
+        ]
+      }
+    ]
   },
   "ignoreFiles": []
 }

@@ -5,7 +5,6 @@ Frontend:
  - Redux-Thunk do obsługi asynchronicznych akcji w Reduxie
  - Typescript 5 dla statycznego typowania kodu i lepszego wsparcia IDE
  - TailwindCSS 4 pozwala an wygodne stylowanie aplikacji
- - Shadcn/ui zapewnia bibliotekę dostępnych komponentów React, na których oprzemy UI
  - Sockette 2 do obsługi komunikacji w czasie rzeczywistym przez WebSockety
 
 Backend:

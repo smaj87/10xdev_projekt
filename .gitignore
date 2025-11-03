@@ -9,3 +9,6 @@ package-lock.json
 .DS_Store
 npm-debug.log
 .idea
+
+# Windows-specific files (created by Git Bash)
+nul

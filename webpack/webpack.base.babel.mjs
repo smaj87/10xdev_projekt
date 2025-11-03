@@ -46,6 +46,24 @@ export default (options) => ({
         type: 'javascript/auto', // Traktuj wszystkie pliki jako zwykły JS, nie native ES module
       },
       {
+        // Preprocess our own .css files
+        // This is the place to add your own loaders (e.g. sass/less etc.)
+        test: /\.css$/,
+        exclude: /node_modules/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                config: path.resolve(process.cwd(), 'postcss.config.mjs'),
+              },
+            },
+          },
+        ],
+      },
+      {
         // Preprocess 3rd party .css files located in node_modules
         test: /\.css$/,
         include: /node_modules/,
