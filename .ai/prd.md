@@ -53,14 +53,6 @@ Wersja MVP nie obejmuje:
 - rozbudowanej personalizacji (poza jasnym/ciemnym trybem)
 
 ## 5. Historyjki użytkowników
-US-001
-Tytuł: Rejestracja nowego konta
-Opis: Jako nowy użytkownik chcę się zarejestrować, aby móc tworzyć i zarządzać swoimi listami TODO.
-Kryteria akceptacji:
-- formularz z polami email i hasło
-- walidacja email i hasła (min. 8 znaków)
-- po rejestracji użytkownik jest zalogowany i przekierowany do pulpitu
-
 US-002
 Tytuł: Logowanie i wylogowanie
 Opis: Jako zarejestrowany użytkownik chcę się logować i wylogowywać, aby kontrolować dostęp do mojego konta.

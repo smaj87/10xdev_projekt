@@ -55,7 +55,9 @@ class ErrorLogService {
       );
     } catch (error) {
       // If logging fails, at least log to console
+      // eslint-disable-next-line no-console
       console.error('Failed to log error to database:', error);
+      // eslint-disable-next-line no-console
       console.error('Original error:', {
         user_id,
         endpoint,

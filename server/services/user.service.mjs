@@ -337,13 +337,18 @@ class UserService {
         VALUES (?, ?, ?, ?, ?, ?)
       `;
 
+      const themeValue =
+        data.theme === undefined || data.theme === null || data.theme === ''
+          ? 'system'
+          : data.theme;
+
       db.prepare(query).run(
         userId,
         data.email,
         data.password_hash,
         data.role || 'user',
         data.is_blocked ? 1 : 0,
-        data.theme || null,
+        themeValue,
       );
 
       // Retrieve and return the created user

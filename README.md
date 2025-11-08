@@ -32,7 +32,6 @@ Aplikacja rozwiązuje problem gubienia się w dużej liczbie zadań, dostarczaj�
 - **Redux-Thunk** - obsługa asynchronicznych akcji
 - **TypeScript 5** - statyczne typowanie dla lepszego wsparcia IDE
 - **TailwindCSS 4** - framework CSS do szybkiego stylowania
-- **Shadcn/ui** - biblioteka komponentów React
 - **Sockette 2** - komunikacja w czasie rzeczywistym przez WebSocket
 
 ### Backend

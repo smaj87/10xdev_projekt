@@ -37,7 +37,7 @@
 **Technologie**:
 - Frontend: Preact 10 + preact/compat, Redux 5 + Redux-Thunk, TypeScript 5, TailwindCSS 4, Sockette 2
 - Backend: Node.js 20, Fastify 5, SQLite 3
-- Narzędzia: Webpack, Babel, Shadcn/ui dla komponentów
+- Narzędzia: Webpack, Babel
 
 **Wymagania funkcjonalne UI**:
 - Responsywny desktop (≥1024px)

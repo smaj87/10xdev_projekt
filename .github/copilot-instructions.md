@@ -22,7 +22,6 @@ Aplikacja to menadżer zadań do wykonania. Użytkownik może dodawać, edytowa�
 - Node.js i Fastify - Backend aplikacji
 - Webpack i Babel - Narzędzia do budowy i transpilacji kodu
 - SqlLite - Lekka baza danych do przechowywania zadań
-- Shadcn/ui - zapewnia bibliotekę dostępnych komponentów React, na których oprzemy UI
 - Sockette - do obsługi komunikacji w czasie rzeczywistym przez WebSockety
 
 ## Własne funkcje

@@ -4,7 +4,7 @@
 Generate a proof of concept for a simple TODO task management web application called "Tasks". This PoC should demonstrate core task management functionality while excluding advanced features to validate the basic concept.
 
 ## Required Technology Stack
-- **Frontend**: Preact 10, Redux 5, Redux-Thunk, TypeScript 5, TailwindCSS 4, Shadcn/ui components
+- **Frontend**: Preact 10, Redux 5, Redux-Thunk, TypeScript 5, TailwindCSS 4
 - **Backend**: Node.js 20, Fastify 5, SQLite 3
 - **Target**: Desktop browsers (>=1024px width)
 
@@ -48,7 +48,6 @@ Focus ONLY on these fundamental features:
 ## Technical Requirements
 - Use TypeScript for type safety
 - Implement Redux for state management
-- Use Shadcn/ui components for consistent UI
 - RESTful API with proper HTTP methods
 - Simple SQLite schema (single tasks table)
 - Responsive design for desktop screens

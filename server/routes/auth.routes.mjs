@@ -50,8 +50,8 @@ export default async (fastify) => {
       },
     },
     async (request, reply) => {
-      let statusCode = 200;
-      let response = null;
+      let statusCode;
+      let response;
       let shouldSetCookie = false;
       let sessionId = null;
 
@@ -138,8 +138,8 @@ export default async (fastify) => {
    * Logout user and destroy session
    */
   fastify.get('/auth/logout', async (request, reply) => {
-    let statusCode = 204;
-    let response = null;
+    let statusCode;
+    let response;
     let shouldClearCookie = false;
 
     try {
@@ -200,6 +200,78 @@ export default async (fastify) => {
   });
 
   /**
+   * GET /auth/session
+   * Hydrate existing session if valid
+   */
+  fastify.get('/auth/session', async (request, reply) => {
+    let statusCode;
+    let response = null;
+
+    try {
+      const sessionId = request.cookies?.sessionId;
+      if (!sessionId) {
+        statusCode = 401;
+        response = {
+          statusCode,
+          error: 'Unauthorized',
+          message: 'Authentication required',
+        };
+      } else {
+        const user = await UserService.getUserBySession(sessionId);
+
+        if (!user) {
+          statusCode = 401;
+          response = {
+            statusCode,
+            error: 'Unauthorized',
+            message: 'Invalid or expired session',
+          };
+        } else if (user.is_blocked) {
+          await ErrorLogService.logError({
+            userId: user.id,
+            endpoint: '/auth/session',
+            method: 'GET',
+            statusCode: 463,
+            errorMessage: 'Session check on blocked account',
+            requestData: null,
+            userAgent: request.headers['user-agent'],
+          });
+          statusCode = 463;
+          response = {
+            statusCode,
+            error: 'Forbidden',
+            message: 'Account is blocked',
+          };
+        } else {
+          statusCode = 200;
+          response = {
+            user: { id: user.id, email: user.email, role: user.role },
+          };
+        }
+      }
+    } catch (error) {
+      await ErrorLogService.logError({
+        userId: null,
+        endpoint: '/auth/session',
+        method: 'GET',
+        statusCode: 500,
+        errorMessage: error.message,
+        requestData: null,
+        userAgent: request.headers['user-agent'],
+      });
+
+      statusCode = 500;
+      response = {
+        statusCode,
+        error: 'Internal Server Error',
+        message: 'Session check failed',
+      };
+    }
+
+    return reply.status(statusCode).send(response);
+  });
+
+  /**
    * Method Not Allowed handlers for /auth/login (all except POST)
    */
   registerMethodNotAllowed(fastify, '/auth/login', [
@@ -213,6 +285,16 @@ export default async (fastify) => {
    * Method Not Allowed handlers for /auth/logout (all except GET)
    */
   registerMethodNotAllowed(fastify, '/auth/logout', [
+    'POST',
+    'PUT',
+    'DELETE',
+    'PATCH',
+  ]);
+
+  /**
+   * Method Not Allowed handlers for /auth/session (all except GET)
+   */
+  registerMethodNotAllowed(fastify, '/auth/session', [
     'POST',
     'PUT',
     'DELETE',

@@ -44,7 +44,7 @@ const deleteCategorySchema = {
   },
 };
 
-export default async function (fastify) {
+export default async (fastify) => {
   /**
    * GET /categories
    * Get all categories (public access)
@@ -202,4 +202,4 @@ export default async function (fastify) {
     'POST',
     'PATCH',
   ]);
-}
+};

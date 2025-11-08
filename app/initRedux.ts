@@ -1,10 +1,14 @@
 import { KEY as T_KEY } from 'components/hooks/useTranslations/constants';
 import tReducer from 'components/hooks/useTranslations/reducer';
+import adminUsersReducer from 'components/store/adminUsers/adminUsersSlice';
+import authReducer from 'components/store/auth/authSlice';
 import { ThunkDispatch } from 'components/utils/react-redux';
 import { UnknownAction } from 'components/utils/redux';
 
 export const reducers = {
   [T_KEY]: tReducer,
+  auth: authReducer,
+  adminUsers: adminUsersReducer,
 } as const;
 
 export const middlewares = [];

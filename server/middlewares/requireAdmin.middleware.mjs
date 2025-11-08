@@ -43,7 +43,9 @@ export async function requireAdmin(request, reply) {
         message: 'Admin role required',
       });
     }
+
     // User is admin, continue
+    return undefined; // explicit dla consistent-return
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Admin authorization error:', error);
