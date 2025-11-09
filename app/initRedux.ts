@@ -1,5 +1,6 @@
 import { KEY as T_KEY } from 'components/hooks/useTranslations/constants';
 import tReducer from 'components/hooks/useTranslations/reducer';
+import adminCategoriesReducer from 'components/store/adminCategories/adminCategoriesSlice';
 import adminUsersReducer from 'components/store/adminUsers/adminUsersSlice';
 import authReducer from 'components/store/auth/authSlice';
 import { ThunkDispatch } from 'components/utils/react-redux';
@@ -9,6 +10,7 @@ export const reducers = {
   [T_KEY]: tReducer,
   auth: authReducer,
   adminUsers: adminUsersReducer,
+  adminCategories: adminCategoriesReducer,
 } as const;
 
 export const middlewares = [];

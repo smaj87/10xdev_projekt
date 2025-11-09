@@ -18,7 +18,7 @@ Poniżej wyszczególniono każdy widok wraz z celem, informacjami, komponentami,
 - Przypadki brzegowe: Konto zablokowane (wyświetlenie komunikatu), brak połączenia (retry / odświeżenie).
 
 ### Widok: Dashboard (Aktywne listy)
-- Ścieżka: `/dashboard` (zakładka aktywne domyślnie) / stan zakładki w store.
+- Ścieżka: `/` (zakładka aktywne domyślnie) / stan zakładki w store.
 - Główny cel: Przegląd aktywnych list i szybkie filtrowanie/sortowanie.
 - Kluczowe informacje: Kafelki list (tytuł, top 5 zadań, licznik, kategoria, priorytet, termin), szybkie filtry, sortowanie, przycisk dodaj listę.
 - Kluczowe komponenty: `DashboardHeader`, `FilterToolbar`, `ListGrid`, `ListCard`, `AddListButton`, `Tabs`.
@@ -29,7 +29,7 @@ Poniżej wyszczególniono każdy widok wraz z celem, informacjami, komponentami,
 - Przypadki brzegowe: Brak list → pusty stan z CTA dodaj listę; błędy filtrów (nieprawidłowe parametry) → reset do domyślnych.
 
 ### Widok: Dashboard (Archiwalne listy)
-- Ścieżka: `/dashboard?tab=archived` (lub stan zakładki).
+- Ścieżka: `/?tab=archived` (lub stan zakładki).
 - Główny cel: Przegląd archiwalnych list (≤3 miesiące) z ograniczonymi akcjami.
 - Kluczowe informacje: Lista z datą archiwizacji, dostępne filtrowanie podobne jak aktywne.
 - Kluczowe komponenty: Dziedziczone z aktywnych: `Tabs`, `ListGrid`, `ListCard` (bez przycisku archiwizacji, z wyróżnikiem „Archiwalna”).

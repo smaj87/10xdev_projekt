@@ -1,26 +1,17 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+
+import Sidebar, { SidebarItem } from 'components/commons/Sidebar';
 
 import { FC } from 'components/utils/react';
 
-const AdminSidebar: FC = () => (
-  <aside
-    aria-label="Admin Nawigacja"
-    className="w-48 shrink-0 bg-white border-r border-gray-200 p-4 flex flex-col gap-2"
-  >
-    <NavLink
-      className={({ isActive }) =>
-        `text-sm px-2 py-1 rounded ${isActive ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'}`
-      }
-      to="/admin/users"
-    >
-      Użytkownicy
-    </NavLink>
-  </aside>
-);
+const adminItems: SidebarItem[] = [
+  { to: '/admin/users', label: 'Użytkownicy' },
+  { to: '/admin/categories', label: 'Kategorie' },
+];
 
 const AdminLayout: FC = () => (
   <div className="min-h-screen flex bg-gray-50" data-layout="AdminLayout">
-    <AdminSidebar />
+    <Sidebar ariaLabel="Admin Nawigacja" items={adminItems} />
     <main className="flex-1 p-6">
       <Outlet />
     </main>

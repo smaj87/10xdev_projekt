@@ -140,5 +140,34 @@
     "webpack-hot-middleware": "2.26.1",
     "webpack-pwa-manifest": "4.3.0",
     "workbox-webpack-plugin": "7.3.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.(ts|tsx|js|jsx)$": ["babel-jest", {"configFile": "./babel-jest.config.cjs"}]
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "roots": [
+      "<rootDir>/app/components/store/lists/__tests__"
+    ],
+    "moduleNameMapper": {
+      "^components/utils/react$": "<rootDir>/app/components/utils/react.ts",
+      "^components/(.*)$": "<rootDir>/app/components/$1",
+      "^containers/(.*)$": "<rootDir>/app/containers/$1",
+      "^initRedux$": "<rootDir>/app/initRedux.ts",
+      "^types/(.*)$": "<rootDir>/types/$1"
+    },
+    "collectCoverageFrom": [
+      "app/components/store/lists/listsSlice.ts"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ]
   }
 }

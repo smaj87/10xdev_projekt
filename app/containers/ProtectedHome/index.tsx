@@ -6,6 +6,7 @@ import {
 } from 'components/store/auth/authSlice';
 import { FC } from 'components/utils/react';
 import { useSelector } from 'components/utils/react-redux';
+import UserLayout from 'containers/UserLayout';
 
 const ProtectedHome: FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -19,14 +20,7 @@ const ProtectedHome: FC = () => {
     return <Navigate replace to="/admin/users" />;
   }
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-4xl font-bold text-blue-600 mb-4">10xdev</h1>
-        <p className="text-gray-600">Tailwind CSS is configured and working!</p>
-      </div>
-    </div>
-  );
+  return <UserLayout></UserLayout>;
 };
 
 export default ProtectedHome;
